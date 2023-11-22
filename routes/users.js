@@ -1,5 +1,5 @@
 var express = require('express');
-const { hashPassword, createToken } = require('../controllers/auth');
+const { hashPassword, createToken, hashCompare } = require('../controllers/auth');
 const { UserModel } = require('../models/userSchema');
 var router = express.Router();
 
@@ -25,9 +25,9 @@ router.post("/signup", async (req, res)=>{
 // signin user
 router.post('/signin', async (req, res) => {
   try {
-    const { login, password } = req.body;
+    const { userVerify, password } = req.body;
     let user = await UserModel.findOne({
-      $or: [{ email: login }, { phone: login }],
+      $or: [{ email: userVerify }, { phone: userVerify }],
     });
     
       if(user){
@@ -41,7 +41,7 @@ router.post('/signin', async (req, res) => {
       } else {
           res.status(404).send({message: "User not found"})
       }           
-      console.log(user) 
+       
       } catch (error) {
         console.log(error);
       res.status(500).json({ message: "Internal Server Error", error });      

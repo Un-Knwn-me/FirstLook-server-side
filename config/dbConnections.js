@@ -7,18 +7,9 @@ const MongoClient = mongodb.MongoClient;
 module.exports = { mongodb, dbName, db_url, MongoClient };
 
 // db connection
-const dbConnect = () => {
-    mongoose.connect(db_url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 5000
-      })
-      .then(() => {
-        console.log('Connected to MongoDB');
-      })
-      .catch((error) => {
-        console.log('Failed to connect to MongoDB', error);
-      });
+const dbConnect = async() => {
+   await mongoose.connect(db_url)
+  console.log("Connected")
 }
 
 module.exports = dbConnect;

@@ -3,11 +3,7 @@ const validator = require('validator');
 require('dotenv').config();
 
 const userSchema = new mongoose.Schema({
-    firstName:{
-        type:String,
-        required:true,
-    },
-    lastName:{
+    name:{
         type:String,
         required:true,
     },
@@ -19,6 +15,7 @@ const userSchema = new mongoose.Schema({
     },
     phone:{
         type:String,
+        minMax: 10,
         required:true,
         unique:true,
         index:true,
@@ -28,11 +25,11 @@ const userSchema = new mongoose.Schema({
         required:true,
     },
     shirtSize:{
-        type:Number,
+        type:String,
         required:true,
     },
     hipSize:{
-        type:Number,
+        type:String,
         required:true,
     },
     height:{

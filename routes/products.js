@@ -6,8 +6,22 @@ var router = express.Router();
 // Get all products
 router.get('/list', async (req, res) => {
   try {
-    const products = await ProductModel.find();
+    const { category, color, minPrice, maxPrice, size, sortBy } = req.query;
+    
+    const filters = {};
+    if (category) filters.category = category;
+    if (color) filters.color = color;
+    if (size) filters.size = size;
+    if (minPrice || maxPrice) {
+      filters.salesPrice = { $gte: minPrice || 0, $lte: maxPrice || Number.MAX_SAFE_INTEGER };
+    }
+
+    const sortOption = sortBy || 'createdAt';
+
+    const products = await ProductModel.find(filters).sort(sortOption);
     res.status(200).json(products);
+    console.log('2')
+    console.log(products)
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error', error: error.message });

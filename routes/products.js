@@ -7,7 +7,6 @@ var router = express.Router();
 router.get('/list', async (req, res) => {
   try {
     const { sortBy } = req.query;
-    console.log(req.query);
 
     let sortCriteria = {};
 

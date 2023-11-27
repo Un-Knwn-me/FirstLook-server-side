@@ -6,7 +6,32 @@ var router = express.Router();
 // Get all products
 router.get('/list', async (req, res) => {
   try {
-    const products = await ProductModel.find();
+    const { sortBy } = req.query;
+    console.log(req.query);
+
+    let sortCriteria = {};
+
+    switch (sortBy) {
+      case 'highToLow':
+        sortCriteria = { price: -1 };
+        break;
+      case 'lowToHigh':
+        sortCriteria = { price: 1 };
+        break;
+      case 'newestFirst':
+        sortCriteria = { createdAt: -1 };
+        break;
+      case 'oldestFirst':
+        sortCriteria = { createdAt: 1 };
+        break;
+      case 'name':
+        sortCriteria = { name: 1 };
+        break;
+      default:
+        break;
+    }
+
+    const products = await ProductModel.find().sort(sortCriteria);
     res.status(200).json(products);
   } catch (error) {
     console.error(error);

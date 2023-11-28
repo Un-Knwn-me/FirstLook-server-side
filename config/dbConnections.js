@@ -10,8 +10,9 @@ module.exports = { mongodb, dbName, db_url, MongoClient };
 const dbConnect = async() => {
   try {
     // const connectionParams = {useNewUrlParser: true}
-    await mongoose.connect(db_url)
+    const connection = await mongoose.connect(db_url);
     console.log('Connected to MongoDB');
+    return connection
   } catch (error) {
     console.log('Failed to connect to MongoDB', error);
   }   

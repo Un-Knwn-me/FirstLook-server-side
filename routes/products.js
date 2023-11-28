@@ -12,10 +12,10 @@ router.get('/list', async (req, res) => {
 
     switch (sortBy) {
       case 'highToLow':
-        sortCriteria = { price: -1 };
+        sortCriteria = { salesPrice: -1 };
         break;
       case 'lowToHigh':
-        sortCriteria = { price: 1 };
+        sortCriteria = { salesPrice: 1 };
         break;
       case 'newestFirst':
         sortCriteria = { createdAt: -1 };

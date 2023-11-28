@@ -7,7 +7,7 @@ require('dotenv').config();
 const isSignedIn = async (req, res, next) => {
     try {
       if (req.headers.authorization) {
-      let token = req.headers.authorization?.split(' ')[1];
+      let token = req.headers.authorization.split(' ')[1];
       let data = decodeToken(token);
       req.user = {_id: data._id};
       next();       
@@ -16,7 +16,7 @@ const isSignedIn = async (req, res, next) => {
 }
     }
      catch (error) {
-      return res.status(500).json({ message: "Invalid Authentication" });
+      return res.status(500).json({ message: "Invalid Authentication", error });
     }
 };
 

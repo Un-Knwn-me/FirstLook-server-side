@@ -14,8 +14,8 @@ const hashCompare = (password, hash) =>{
   return bcrypt.compare(password,hash);
 }
 
-const createToken = ({firstName, lastName, email, role, image})=>{
-  let token = jwt.sign({firstName, lastName, email, role, image}, process.env.SecretKey, {expiresIn: "60m"});
+const createToken = ({_id, name, email, role})=>{
+  let token = jwt.sign({_id, name, email, role}, process.env.SecretKey);
 //   var token = jwt.sign({email_id:'123@gmail.com'}, "Stack", {});
   return token;
 }

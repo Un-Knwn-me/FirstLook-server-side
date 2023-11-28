@@ -32,7 +32,7 @@ router.post('/signin', async (req, res) => {
     
       if(user){
           if(await hashCompare(password, user.password)){
-              let token = createToken({ email: user.email, firstName: user.firstName, lastName: user.lastName, shirtSize: user.shirtSize, hipSize: user.hipSize })
+              let token = createToken({ _id: user._id, name: user.name, phone: user.phone, shirtSize: user.shirtSize, hipSize: user.hipSize })
 
               res.status(200).send({message: "User successfully logged in", token });
           } else {

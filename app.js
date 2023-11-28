@@ -12,6 +12,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 let adminRouter = require('./routes/admin');
 let productRouter = require('./routes/products');
+let cartRouter = require('./routes/cart');
 
 dotenv.config();
 dbConnect();
@@ -35,6 +36,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
 app.use('/product', productRouter);
+app.use('/cart', cartRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

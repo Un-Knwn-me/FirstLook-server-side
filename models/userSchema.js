@@ -34,11 +34,9 @@ const userSchema = new mongoose.Schema({
     },
     height:{
         type:Number,
-        required:true,
     },
     weight:{
         type:Number,
-        required:true,
     },
     cart: [
         {
@@ -49,6 +47,51 @@ const userSchema = new mongoose.Schema({
             quantity: {
                 type: Number
             }
+        }
+    ],
+    orderId: [
+        {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'orders'
+    },
+],
+    address: [
+        {
+            name: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: Number,
+                required: true
+            },
+            building: {
+                type: String,
+                required: true
+            },
+            street: {
+                type: String,
+                required: true
+            },
+            city: {
+                type: String,
+                required: true
+            },
+            landmark: {
+                type: String
+            },
+            state: {
+                type: String,
+                required: true
+            },
+            pincode: {
+                type: Number,
+                required: true
+            },
+            country: {
+                type: String,
+                default: 'India'
+            },
         }
     ],
 },{versionKey: false, collection:"user"});

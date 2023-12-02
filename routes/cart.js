@@ -33,18 +33,42 @@ router.get("/getProducts", isSignedIn, async (req, res) => {
       };
     });
 
-    res.status(200).json({ message: "Your cart items", cart: cartDetails });
+    res.status(200).json({ message: "Your cart items", cart: cartDetails, userAddress: user.address });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error", error });
   }
 });
 
-// add to cart
-router.post("/addcart", isSignedIn, async (req, res) => {
+// get address
+router.post("/address", isSignedIn, async(req, res) => {
   try {
     const { _id } = req.user;
-    const { productId, quantity } = req.body;
+    const newAddress = req.body;
+
+    // Find the user by userId
+    let user = await UserModel.findOne({ _id: _id });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.address.push(newAddress);
+    await user.save();
+
+    res.status(200).json({ message: "Address added successfully", userAddress: user.address });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+})
+
+// change quantity in cart
+router.put("/changeQuantity/:productId", isSignedIn, async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { productId } = req.params;
+    const { quantity } = req.body;
+    console.log(quantity)
 
     if (!_id || !productId || !quantity) {
       return res
@@ -64,11 +88,8 @@ router.post("/addcart", isSignedIn, async (req, res) => {
       (item) => String(item.productId) === String(productId)
     );
 
-    if (existingProduct >= 0) {
-      user.cart[existingProduct].quantity += quantity;
-    } else {
-      user.cart.push({ productId, quantity });
-    }
+    // change the quantity
+    user.cart[existingProduct].quantity = quantity;
     await user.save();
 
     res.status(200).json({ message: "Product added to cart", cart: user.cart });
@@ -79,10 +100,10 @@ router.post("/addcart", isSignedIn, async (req, res) => {
 });
 
 // remove from cart
-router.post("/removecart", async (req, res) => {
+router.delete("/removecart/:productId", isSignedIn, async (req, res) => {
   try {
     const { _id } = req.user;
-    const { productId } = req.body;
+    const { productId } = req.params;
 
     if (!_id || !productId) {
       return res

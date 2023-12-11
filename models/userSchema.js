@@ -46,6 +46,12 @@ const userSchema = new mongoose.Schema({
             },
             quantity: {
                 type: Number
+            },
+            salesPrice: {
+                type: Number
+            },
+            price: {
+                type: Number
             }
         }
     ],

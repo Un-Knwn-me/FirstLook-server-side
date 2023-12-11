@@ -29,7 +29,7 @@ const adminSchema = new mongoose.Schema({
     },
     role:{
         type: String,
-        required: true,
+        default: 'Admin',
     },
 },{versionKey: false, collection:"admin"});
 

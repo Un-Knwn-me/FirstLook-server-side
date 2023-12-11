@@ -6,7 +6,7 @@ var router = express.Router();
 // signup user
 router.post("/signup", async (req, res)=>{
   try {
-    let user = await UserModel.findOne({email: req.body.email})
+    let user = await UserModel.findOne({ email: req.body.email });
 
     if(!user){
       req.body.password = await hashPassword(req.body.password);
@@ -32,14 +32,14 @@ router.post('/signin', async (req, res) => {
     
       if(user){
           if(await hashCompare(password, user.password)){
-              let token = createToken({ _id: user._id, name: user.name, phone: user.phone, shirtSize: user.shirtSize, hipSize: user.hipSize })
+              let token = createToken({ _id: user._id, name: user.name, shirtSize: user.shirtSize, hipSize: user.hipSize })
 
-              res.status(200).send({message: "User successfully logged in", token });
+              res.status(200).json({message: "User successfully logged in", token });
           } else {
-              res.status(401).send({message: "Invalid credentials"})
+              res.status(401).json({message: "Invalid credentials"})
           }
       } else {
-          res.status(404).send({message: "User not found"})
+          res.status(404).json({message: "User not found"})
       }           
        
       } catch (error) {

@@ -22,9 +22,13 @@ const createToken = ({_id, name, email, role, shirtSize, hipSize})=>{
   return token;
 }
 
-const decodeToken = (token) => {
-  let data = jwt.verify(token, process.env.SecretKey);
-  return data;
+const decodeToken = async(token) => {
+  try {
+    let data = await jwt.verify(token, process.env.SecretKey);
+    return data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 module.exports = {hashCompare, hashPassword, createToken, decodeToken,}

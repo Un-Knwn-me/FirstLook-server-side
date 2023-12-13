@@ -9,6 +9,7 @@ const isSignedIn = async (req, res, next) => {
       if (req.headers.authorization) {
       let token = req.headers.authorization.split(' ')[1];
       let data = decodeToken(token);
+      console.log(data)
       req.user = {_id: data._id};
       next();       
      } else {

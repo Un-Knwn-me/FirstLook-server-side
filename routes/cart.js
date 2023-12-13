@@ -9,7 +9,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
   try {
     const { _id } = req.user;
     const { productId, quantity, salesPrice, price } = req.body;
-console.log(_id)
+
     if (!_id || !productId || !quantity) {
       return res
         .status(400)
@@ -63,7 +63,7 @@ router.get("/getProducts", isSignedIn, async (req, res) => {
     const products = await ProductModel.find({ _id: { $in: productIds } });
 
     // Map product details from the user's cart with quantity and size
-    const cartDetails = user.cart.map((cartItem) => {
+    const cartDetails = await user.cart.map((cartItem) => {
       const productDetail = products.find((product) =>
         product._id.equals(cartItem.productId)
       );

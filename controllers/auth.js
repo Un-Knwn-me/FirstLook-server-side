@@ -24,8 +24,10 @@ const createToken = ({_id, name, email, role, shirtSize, hipSize})=>{
 
 const decodeToken = async(token) => {
   try {
-    let data = await jwt.verify(token, process.env.SecretKey);
-    return data;
+    if(token) {
+      let data = await jwt.verify(token, process.env.SecretKey);
+      return data;
+    }
   } catch (error) {
     throw error;
   }

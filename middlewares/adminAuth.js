@@ -6,10 +6,11 @@ require('dotenv').config();
 
 const isSignedIn = async (req, res, next) => {
     try {
-      if (req.headers.authorization) {
-      let token = req.headers.authorization.split(' ')[1];
+      const header = await req.headers.authorization
+      if (header) {
+      let token = await header.split(' ')[1];
       let data = await decodeToken(token);
-      console.log(data)
+      console.log(header)
       req.user = {_id: data._id};
       next();       
      } else {

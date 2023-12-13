@@ -9,7 +9,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
   try {
     const { _id } = req.user;
     const { productId, quantity, salesPrice, price } = req.body;
-
+console.log(_id)
     if (!_id || !productId || !quantity) {
       return res
         .status(400)

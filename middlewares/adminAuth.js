@@ -7,6 +7,7 @@ require('dotenv').config();
 const isSignedIn = async (req, res, next) => {
     try {
       const header = await req.headers.authorization
+      console.log(header)
       if (header) {
       let token = await header.split(' ')[1];
       let data = await decodeToken(token);

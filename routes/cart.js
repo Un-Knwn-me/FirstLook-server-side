@@ -1,8 +1,8 @@
 var express = require("express");
+var router = express.Router();
 const { UserModel } = require("../models/userSchema");
 const { isSignedIn } = require("../middlewares/adminAuth");
 const { ProductModel } = require("../models/productSchema");
-var router = express.Router();
 
 // Add to cart
 router.post("/addToCart", isSignedIn, async (req, res) => {
@@ -127,9 +127,9 @@ router.post("/addAddress", isSignedIn, async (req, res) => {
 router.put("/changeQuantity", isSignedIn, async (req, res) => {
   try {
     const { _id } = req.user;
-    const { productId, quantity } = req.body;
+    const { cartId, quantity } = req.body;
 
-    if (!_id || !productId || !quantity) {
+    if (!_id || !cartId || !quantity) {
       return res
         .status(400)
         .json({ message: "Bad Request - Missing product data" });
@@ -144,31 +144,40 @@ router.put("/changeQuantity", isSignedIn, async (req, res) => {
 
     // Check if the product already exists in the user's cart
     const existingProduct = user.cart.findIndex(
-      (item) => String(item.productId) === String(productId)
+      (item) => String(item._id) === String(cartId)
     );
 
     // change the quantity
     user.cart[existingProduct].quantity = quantity;
     await user.save();
 
-    // Get the productId from the cart
-    const productIds = user.cart.map((item) => item.productId);
+      // Get the productId from the cart
+      const productIds = await user.cart.map((item) => item.productId);
 
-    // Get the productDetails using productIds
-    const products = await ProductModel.find({ _id: { $in: productIds } });
+      // Get the productDetails using productIds
+      const products = await ProductModel.find({ _id: { $in: productIds } });
 
-    // Map product details from the user's cart with quantity and size
-    const cartDetails = user.cart.map((cartItem) => {
-      const productDetail = products.find((product) =>
-        product._id.equals(cartItem.productId)
-      );
-      return {
-        product: productDetail,
-        quantity: cartItem.quantity,
-        salesPrice: cartItem.salesPrice,
-        price: cartItem.price,
-      };
-    });
+      // Map product details from the user's cart with quantity and size
+      const cartDetails = await user.cart.map((cartItem) => {
+        const productDetail = products.find((product) =>
+          product._id.equals(cartItem.productId)
+        );
+
+        const stockItem = productDetail.varients.find((stock) => 
+        stock._id.equals(cartItem.varientId)
+        )
+          
+        return {
+          _id: cartItem._id,
+          product: productDetail,
+          quantity: cartItem.quantity,
+          salesPrice: cartItem.salesPrice,
+          price: cartItem.price,
+          selectedSize: cartItem.selectedSize,
+          varientId: cartItem.varientId,
+          varient: stockItem
+        };
+      });
 
     res
       .status(200)
@@ -180,12 +189,12 @@ router.put("/changeQuantity", isSignedIn, async (req, res) => {
 });
 
 // remove from cart
-router.delete("/removecart/:productId", isSignedIn, async (req, res) => {
+router.delete("/removecart/:cartId", isSignedIn, async (req, res) => {
   try {
     const { _id } = req.user;
-    const { productId } = req.params;
+    const { cartId } = req.params;
 
-    if (!_id || !productId) {
+    if (!_id || !cartId) {
       return res
         .status(400)
         .json({ message: "Bad Request - Missing product data" });
@@ -197,20 +206,49 @@ router.delete("/removecart/:productId", isSignedIn, async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    user.cart.pull({ _id: cartId });
 
-    // Remove the product which matches id
-    user.cart = user.cart.filter(
-      (item) => String(item.productId) !== String(productId)
-    );
     await user.save();
+
+          // Get the productId from the cart
+          const productIds = await user.cart.map((item) => item.productId);
+
+          // Get the productDetails using productIds
+          const products = await ProductModel.find({ _id: { $in: productIds } });
+    
+          // Map product details from the user's cart with quantity and size
+          const cartDetails = await user.cart.map((cartItem) => {
+            const productDetail = products.find((product) =>
+              product._id.equals(cartItem.productId)
+            );
+    
+            const stockItem = productDetail.varients.find((stock) => 
+            stock._id.equals(cartItem.varientId)
+            )
+              
+            return {
+              _id: cartItem._id,
+              product: productDetail,
+              quantity: cartItem.quantity,
+              salesPrice: cartItem.salesPrice,
+              price: cartItem.price,
+              selectedSize: cartItem.selectedSize,
+              varientId: cartItem.varientId,
+              varient: stockItem
+            };
+          });    
 
     res
       .status(200)
-      .json({ message: "Product removed from cart", cart: user.cart });
+      .json({ message: "Product removed from cart", cart: cartDetails });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error", error });
   }
 });
-
+  // // Remove the product which matches id
+    // user.cart = user.cart.filter(
+    //   (item) => String(item.productId) !== String(productId)
+    // );
+    // await user.save();
 module.exports = router;

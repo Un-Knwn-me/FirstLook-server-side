@@ -40,11 +40,6 @@ const productSchema = new mongoose.Schema({
         required: [true, 'Please Enter the Product Type'],
         trim: true
     },
-    size: {
-        type: String,
-        required: [true, 'Please Enter the Product Size'],
-        trim: true
-    },
     color: {
         type: String,
         required: [true, 'Please Enter the Product Color'],
@@ -67,10 +62,19 @@ const productSchema = new mongoose.Schema({
             message: 'Please Select the Correct Tag!'
         }
     },
-    stock: {
-        type: Number,
-        required: [[true, "Please Enter Product Stock Count!"]],
-    },
+    varients: [
+        {
+            size: {
+                type: String,
+                required: [true, 'Please Enter the Product Size'],
+                trim: true
+            },
+            stock: {
+                type: Number,
+                required: [true, "Please Enter Product Stock Count!"],
+            },
+        }
+    ],
     fabric: {
         type: String,
         required: [[true, "Please Enter Product Fabric!"]],

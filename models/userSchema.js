@@ -52,6 +52,13 @@ const userSchema = new mongoose.Schema({
             },
             price: {
                 type: Number
+            },
+            varientId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'products.variants',
+            },
+            selectedSize: {
+                type: String
             }
         }
     ],

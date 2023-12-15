@@ -8,13 +8,7 @@ var router = express.Router();
 router.post("/addToCart", isSignedIn, async (req, res) => {
   try {
     const { _id } = req.user;
-    const { productId, quantity, salesPrice, price } = req.body;
-
-    if (!_id || !productId || !quantity) {
-      return res
-        .status(400)
-        .json({ message: "Bad Request - Missing product data" });
-    }
+    const { productId, quantity, salesPrice, price, varientId, selectedSize } = req.body;
 
     // Find the user by userId
     let user = await UserModel.findOne({ _id: _id });
@@ -28,16 +22,20 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
       (item) => String(item.productId) === String(productId)
     );
 
-    if (existingProduct < 0) {
-      user.cart.push({ productId, quantity, salesPrice, price });
+    const existingVarient = user.cart.findIndex(
+      (item) => String(item.varientId) === String(varientId)
+    )
+
+    if (existingProduct < 0 ) {
+      user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });0
+    } else if(existingVarient < 0) {
+      user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });0
     } else {
       user.cart[existingProduct].quantity += quantity;
     }
     await user.save();
 
-    res
-      .status(200)
-      .json({ message: "Item added to cart successfully", cart: user.cart });
+    res.status(200).json({ message: "Item added to cart successfully", cart: user.cart });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error", error });
@@ -45,48 +43,56 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
 });
 
 // Get cart items
-router.get("/getProducts", isSignedIn, async (req, res) => {
-  try {
-    const { _id } = req.user;
+  router.get("/getProducts", isSignedIn, async (req, res) => {
+    try {
+      const { _id } = req.user;
 
-    // Find the user by userId
-    let user = await UserModel.findOne({ _id: _id });
+      // Find the user by userId
+      let user = await UserModel.findOne({ _id: _id });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
 
-    // Get the productId from the cart
-    const productIds = user.cart.map((item) => item.productId);
+      // Get the productId from the cart
+      const productIds = await user.cart.map((item) => item.productId);
 
-    // Get the productDetails using productIds
-    const products = await ProductModel.find({ _id: { $in: productIds } });
+      // Get the productDetails using productIds
+      const products = await ProductModel.find({ _id: { $in: productIds } });
 
-    // Map product details from the user's cart with quantity and size
-    const cartDetails = await user.cart.map((cartItem) => {
-      const productDetail = products.find((product) =>
-        product._id.equals(cartItem.productId)
-      );
-      return {
-        product: productDetail,
-        quantity: cartItem.quantity,
-        salesPrice: cartItem.salesPrice,
-        price: cartItem.price,
-      };
-    });
+      // Map product details from the user's cart with quantity and size
+      const cartDetails = await user.cart.map((cartItem) => {
+        const productDetail = products.find((product) =>
+          product._id.equals(cartItem.productId)
+        );
 
-    res
-      .status(200)
-      .json({
-        message: "Your cart items",
-        cart: cartDetails,
-        userAddress: user.address,
+        const stockItem = productDetail.varients.find((stock) => 
+        stock._id.equals(cartItem.varientId)
+        )
+          
+        return {
+          product: productDetail,
+          quantity: cartItem.quantity,
+          salesPrice: cartItem.salesPrice,
+          price: cartItem.price,
+          selectedSize: cartItem.selectedSize,
+          varientId: cartItem.varientId,
+          varient: stockItem
+        };
       });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Internal Server Error", error });
-  }
-});
+      
+      res
+        .status(200)
+        .json({
+          message: "Your cart items",
+          cart: cartDetails,
+          userAddress: user.address,
+        });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal Server Error", error });
+    }
+  });
 
 // get address
 router.post("/addAddress", isSignedIn, async (req, res) => {

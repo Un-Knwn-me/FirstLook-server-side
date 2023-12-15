@@ -28,9 +28,12 @@ router.post('/product/add', upload.array('images', 6), async (req, res, next) =>
         imageUrls.push(url);
       }
 
+      const varientsArray = await JSON.parse(req.body.varients);
+
       const productData = {
         ...req.body,
-        images: imageUrls, // Store image URLs
+        varients: varientsArray,
+        images: imageUrls,
       };
 
       // Save the product with image URLs in MongoDB

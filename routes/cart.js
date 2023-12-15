@@ -71,6 +71,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
         )
           
         return {
+          _id: cartItem._id,
           product: productDetail,
           quantity: cartItem.quantity,
           salesPrice: cartItem.salesPrice,

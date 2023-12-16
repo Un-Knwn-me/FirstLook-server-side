@@ -10,6 +10,12 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     const { _id } = req.user;
     const { productId, quantity, salesPrice, price, varientId, selectedSize } = req.body;
 
+    if (!_id || !varientId || !selectedSize) {
+      return res
+        .status(400)
+        .json({ message: "Missing product data - Select Varients" });
+    }
+
     // Find the user by userId
     let user = await UserModel.findOne({ _id: _id });
 

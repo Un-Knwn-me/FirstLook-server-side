@@ -8,30 +8,63 @@ const orderSchema = new mongoose.Schema({
     },
     products: [
         {
-            product: {
+            productId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'products',
                 required: true
             },
+            varientId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'products.variants',
+            },
             quantity: {
                 type: Number,
                 required: true
-            }
+            },
+            
         }
     ],
-    totalAmount: {
+    totalItems: {
         type: Number,
         required: true
     },
-    paymentStatus: {
-        type: String,
-        enum: ['Pending', 'Completed', 'Failed'],
-        default: 'Pending'
+    subTotalAmount: {
+        type: Number,
+        required: true
     },
-    transactionId: {
-        type: String
+    // deliveryCharge: {
+    //     type: Number,
+    //     required: true
+    // },
+    // totalAmount: {
+    //     type: Number,
+    //     required: true
+    // },
+    paymentDetails: {
+        paymentMethod: {
+            type: String
+        },
+        paymentStatus: {
+            type: String,
+            enum: ['Pending', 'Completed', 'Failed'],
+            default: 'Pending'
+        },
+        paymentId: {
+            type: String
+        },
+        transactionId: {
+            type: String
+        },    
     },
     deliveryAddress: {
+        name: {
+            type: String,
+            required: true
+        },
+        phone: {
+            type: Number,
+            required: true
+        },
         building: {
             type: String,
             required: true
@@ -44,11 +77,15 @@ const orderSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        landmark: {
+            type: String,
+            required: true
+        },
         state: {
             type: String,
             required: true
         },
-        pinCode: {
+        pincode: {
             type: Number,
             required: true
         },
@@ -59,7 +96,8 @@ const orderSchema = new mongoose.Schema({
     },
     orderDate: {
         type: Date,
-        default: Date.now()
+        default: Date.now(),
+        required: true
     },
     trackingId: {
         type: String
@@ -68,6 +106,9 @@ const orderSchema = new mongoose.Schema({
         type: String,
         enum: ['Dispatched', 'Completed', 'Returned', 'Refunded', 'Pending'],
         default: 'Pending'
+    },
+    deliveredDate: {
+        type: Date
     },
 }, { versionKey: false, collection: "orders" });
 

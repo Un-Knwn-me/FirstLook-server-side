@@ -46,12 +46,12 @@ router.post('/capture-payment', async (req, res) => {
 
 router.post('/verify', async(req, res) => {
     try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-        const sign = razorpay_order_id + "|" + razorpay_payment_id;
+        // const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+        const signature = req.headers['x-razorpay-signature']
+        // const sign = razorpay_order_id + "|" + razorpay_payment_id;
         const expectedSign = crypto.createHmac("sha256", process.env.Webhook_SecretKey).update(sign.toString()).digest("hex");
 
-        if(razorpay_signature === expectedSign) {
+        if(signature === expectedSign) {
             return res.status(200).json({message: "Payment verified successfully"})
         } else {
             return res.status(400).json({message: "Invalid Signature sent!"})

@@ -50,7 +50,7 @@ router.post('/verify', async(req, res) => {
         const signature = req.headers['x-razorpay-signature']
         // const sign = razorpay_order_id + "|" + razorpay_payment_id;
         const expectedSign = crypto.createHmac("sha256", process.env.Webhook_SecretKey).update(sign.toString()).digest("hex");
-
+console.log(req.body)
         if(signature === expectedSign) {
             return res.status(200).json({message: "Payment verified successfully"})
         } else {

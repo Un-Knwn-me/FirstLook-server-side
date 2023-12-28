@@ -10,7 +10,7 @@ const { format } = require('util');
 router.post('/product/add', upload.array('images', 6), async (req, res, next) => {
   try {
     const existingProduct = await ProductModel.findOne({ productName: req.body.productName });
-
+console.log(existingProduct)
     if (!existingProduct) {
       // Extract image URLs from the files uploaded
       const imageUrls = [];
@@ -25,7 +25,7 @@ router.post('/product/add', upload.array('images', 6), async (req, res, next) =>
 
         // Generate the public URL for the file
         const url = format(`https://storage.cloud.google.com/${bucketName}/${originalname}`);
-        await imageUrls.push(url);
+        imageUrls.push(url);
       }
 
       const varientsArray = await JSON.parse(req.body.varients);

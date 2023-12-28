@@ -13,7 +13,12 @@ const hashPassword = async(password)=>{
 }
 
 const hashCompare = (password, hash) =>{
-  return bcrypt.compare(password,hash);
+  try {
+    return bcrypt.compare(password,hash);    
+  } catch (error) {
+    console.error('Error comparing hashes:', error);
+    throw error;
+  }
 }
 
 const createToken = ({_id, name, email, role, shirtSize, hipSize})=>{

@@ -86,6 +86,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
         };
       });
       const cartDetails = await Promise.all(cartDetailsPromises);
+      console.log(cartDetails)
       res
         .status(200)
         .json({

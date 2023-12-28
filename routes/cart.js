@@ -27,7 +27,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     const existingProduct = user.cart.findIndex(
       (item) => String(item.productId) === String(productId)
     );
-    await Promise.all(existingProduct);
+    
     const existingVarient = user.cart.findIndex(
       (item) => String(item.varientId) === String(varientId)
     )

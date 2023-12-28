@@ -26,11 +26,10 @@ router.post("/signup", async (req, res)=>{
 router.post('/signin', async (req, res) => {
   try {
     const { userVerify, password } = req.body;
-    console.log(req.body);
     let user = await UserModel.find({
       $or: [{ phone: userVerify }, { email: userVerify }],
     });
-    
+    console.log(user);
       if(user){
           if(await hashCompare(password, user.password)){
               let token = createToken({ _id: user._id, name: user.name, shirtSize: user.shirtSize, hipSize: user.hipSize })

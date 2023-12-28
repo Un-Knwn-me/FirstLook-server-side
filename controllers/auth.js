@@ -12,9 +12,9 @@ const hashPassword = async(password)=>{
   }
 }
 
-const hashCompare = (password, hash) =>{
+const hashCompare = async(password, hash) =>{
   try {
-    return bcrypt.compare(password,hash);    
+    return await bcrypt.compare(password,hash);    
   } catch (error) {
     console.error('Error comparing hashes:', error);
     throw error;

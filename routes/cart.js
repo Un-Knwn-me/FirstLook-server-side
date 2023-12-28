@@ -24,13 +24,14 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     }
 
     // Check if the product already exists in the user's cart
-    const existingProduct = await user.cart.findIndex(
+    const existingProduct = user.cart.findIndex(
       (item) => String(item.productId) === String(productId)
     );
-
-    const existingVarient = await user.cart.findIndex(
+    await Promise.all(existingProduct);
+    const existingVarient = user.cart.findIndex(
       (item) => String(item.varientId) === String(varientId)
     )
+    await Promise.all(existingVarient);
 
     if (existingProduct < 0 ) {
       user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });

@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         validate:(value)=>validator.isEmail(value)
     },
     phone:{
-        type:Number,
+        type:String,
         minMax: 10,
         required:true,
         unique:true,

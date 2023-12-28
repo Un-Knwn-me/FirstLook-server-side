@@ -29,7 +29,7 @@ router.post('/signin', async (req, res) => {
     let user = await UserModel.findOne({
       $or: [{ phone: userVerify }, { email: userVerify }],
     });
-    console.log(user);
+    console.log('Userdetails', user);
       if(user){
           if(await hashCompare(password, user.password)){
               let token = createToken({ _id: user._id, name: user.name, shirtSize: user.shirtSize, hipSize: user.hipSize })

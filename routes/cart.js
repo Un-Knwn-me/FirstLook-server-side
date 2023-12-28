@@ -65,7 +65,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
       await Promise.all(productIds);
       // Get the productDetails using productIds
       const products = await ProductModel.find({ _id: { $in: productIds } });
-console.log('After promise: ', products)
+
       // Map product details from the user's cart with quantity and size
       const cartDetails = user.cart.map(async (cartItem) => {
         const productDetail = await products.find((product) => product._id.equals(cartItem.productId)
@@ -85,7 +85,7 @@ console.log('After promise: ', products)
           varient: stockItem
         };
       });
-      console.log("Cart items: ", cartDetails);
+      await Promise.all(cartDetails);
       res
         .status(200)
         .json({

@@ -61,11 +61,11 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
       }
 
       // Get the productId from the cart
-      const productIds = await user.cart.map((item) => item.productId);
-
+      const productIds = user.cart.map((item) => item.productId);
+      await Promise.all(productIds);
       // Get the productDetails using productIds
       const products = await ProductModel.find({ _id: { $in: productIds } });
-
+console.log('After promise: ', products)
       // Map product details from the user's cart with quantity and size
       const cartDetails = user.cart.map(async (cartItem) => {
         const productDetail = await products.find((product) => product._id.equals(cartItem.productId)

@@ -24,11 +24,11 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     }
 
     // Check if the product already exists in the user's cart
-    const existingProduct = user.cart.findIndex(
+    const existingProduct = await user.cart.findIndex(
       (item) => String(item.productId) === String(productId)
     );
 
-    const existingVarient = user.cart.findIndex(
+    const existingVarient = await user.cart.findIndex(
       (item) => String(item.varientId) === String(varientId)
     )
 
@@ -86,7 +86,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
         };
       });
       const cartDetails = await Promise.all(cartDetailsPromises);
-      console.log(cartDetails)
+  
       res
         .status(200)
         .json({
@@ -157,21 +157,19 @@ router.put("/changeQuantity", isSignedIn, async (req, res) => {
     await user.save();
 
       // Get the productId from the cart
-      const productIds = await user.cart.map((item) => item.productId);
-
+      const productIds = user.cart.map((item) => item.productId);
+      await Promise.all(productIds);
       // Get the productDetails using productIds
       const products = await ProductModel.find({ _id: { $in: productIds } });
 
       // Map product details from the user's cart with quantity and size
-      const cartDetails = await user.cart.map((cartItem) => {
-        const productDetail = products.find((product) =>
-          product._id.equals(cartItem.productId)
+      const cartDetailsPromises = user.cart.map((cartItem) => {
+        const productDetail = products.find((product) => product._id.equals(cartItem.productId)
         );
 
-        const stockItem = productDetail.varients.find((stock) => 
-        stock._id.equals(cartItem.varientId)
-        )
-          
+        const stockItem = productDetail.varients.find((stock) => stock._id.equals(cartItem.varientId)
+        );
+
         return {
           _id: cartItem._id,
           product: productDetail,
@@ -183,7 +181,7 @@ router.put("/changeQuantity", isSignedIn, async (req, res) => {
           varient: stockItem
         };
       });
-
+      const cartDetails = await Promise.all(cartDetailsPromises);
     res
       .status(200)
       .json({ message: "Product added to cart", cart: cartDetails });
@@ -216,21 +214,19 @@ router.delete("/removecart/:cartId", isSignedIn, async (req, res) => {
     await user.save();
 
           // Get the productId from the cart
-          const productIds = await user.cart.map((item) => item.productId);
-
+          const productIds = user.cart.map((item) => item.productId);
+          await Promise.all(productIds);
           // Get the productDetails using productIds
           const products = await ProductModel.find({ _id: { $in: productIds } });
     
           // Map product details from the user's cart with quantity and size
-          const cartDetails = await user.cart.map((cartItem) => {
-            const productDetail = products.find((product) =>
-              product._id.equals(cartItem.productId)
+          const cartDetailsPromises = user.cart.map((cartItem) => {
+            const productDetail = products.find((product) => product._id.equals(cartItem.productId)
             );
-    
-            const stockItem = productDetail.varients.find((stock) => 
-            stock._id.equals(cartItem.varientId)
-            )
-              
+
+            const stockItem = productDetail.varients.find((stock) => stock._id.equals(cartItem.varientId)
+            );
+
             return {
               _id: cartItem._id,
               product: productDetail,
@@ -242,7 +238,7 @@ router.delete("/removecart/:cartId", isSignedIn, async (req, res) => {
               varient: stockItem
             };
           });    
-
+          const cartDetails = await Promise.all(cartDetailsPromises);
     res
       .status(200)
       .json({ message: "Product removed from cart", cart: cartDetails });

@@ -33,9 +33,9 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     )
 
     if (existingProduct < 0 ) {
-      user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });0
+      user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });
     } else if(existingVarient < 0) {
-      user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });0
+      user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });
     } else {
       user.cart[existingProduct].quantity += quantity;
     }

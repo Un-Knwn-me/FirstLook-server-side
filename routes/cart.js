@@ -22,7 +22,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-console.log('input checking: ', productId, varientId)
+
     // Check if the product already exists in the user's cart
     const existingProduct = user.cart.findIndex(
       (item) => String(item.productId) === String(productId)
@@ -31,7 +31,7 @@ console.log('input checking: ', productId, varientId)
     const existingVarient = user.cart.findIndex(
       (item) => String(item.varientId) === String(varientId)
     )
-    await Promise.all(existingVarient);
+    
 console.log('resulting value: ', existingProduct)
     if (existingProduct < 0 && existingVarient < 0 ) {
       user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });

@@ -9,8 +9,9 @@ const { format } = require('util');
 // Add product
 router.post('/product/add', upload.array('images', 6), async (req, res, next) => {
   try {
+    console.log(req.body)
     const existingProduct = await ProductModel.findOne({ productName: req.body.productName });
-console.log(existingProduct)
+
     if (!existingProduct) {
       // Extract image URLs from the files uploaded
       const imageUrls = [];

@@ -25,11 +25,11 @@ router.post("/signup", async (req, res)=>{
 // signin user
 router.post('/signin', async (req, res) => {
   try {
-    const options = { timeout: 50000 };
     const { userVerify, password } = req.body;
+    console.log(userVerify)
     let user = await UserModel.findOne({
       $or: [{ phone: userVerify }, { email: userVerify }],
-    }, null, options);
+    });
     
       if(user){
           if(await hashCompare(password, user.password)){

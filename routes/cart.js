@@ -85,7 +85,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
           varient: stockItem
         };
       });
-      console.log("CArt item: ", cart)
+      console.log("Cart items: ", cartDetails);
       res
         .status(200)
         .json({

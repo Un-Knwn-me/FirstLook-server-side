@@ -26,7 +26,7 @@ router.post("/signup", async (req, res)=>{
 router.post('/signin', async (req, res) => {
   try {
     const { userVerify, password } = req.body;
-    console.log(userVerify)
+    console.log(typeof(userVerify))
     let user = await UserModel.findOne({
       $or: [{ phone: userVerify }, { email: userVerify }],
     });

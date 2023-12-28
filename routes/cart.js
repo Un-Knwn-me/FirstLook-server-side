@@ -67,11 +67,11 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
       const products = await ProductModel.find({ _id: { $in: productIds } });
 
       // Map product details from the user's cart with quantity and size
-      const cartDetails = user.cart.map(async (cartItem) => {
-        const productDetail = await products.find((product) => product._id.equals(cartItem.productId)
+      const cartDetailsPromises = user.cart.map((cartItem) => {
+        const productDetail = products.find((product) => product._id.equals(cartItem.productId)
         );
 
-        const stockItem = await productDetail.varients.find((stock) => stock._id.equals(cartItem.varientId)
+        const stockItem = productDetail.varients.find((stock) => stock._id.equals(cartItem.varientId)
         );
 
         return {
@@ -85,7 +85,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
           varient: stockItem
         };
       });
-      await Promise.all(cartDetails);
+      const cartDetails = await Promise.all(cartDetailsPromises);
       res
         .status(200)
         .json({

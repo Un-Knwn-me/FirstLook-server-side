@@ -32,7 +32,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
       (item) => String(item.varientId) === String(varientId)
     )
     await Promise.all(existingVarient);
-
+console.log(existingProduct)
     if (existingProduct < 0 ) {
       user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });
     } else if(existingVarient < 0) {

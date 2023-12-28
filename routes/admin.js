@@ -30,7 +30,7 @@ router.post('/product/add', upload.array('images', 6), async (req, res, next) =>
       }
 
       const varientsArray = await JSON.parse(req.body.varients);
-console.log(imageUrls)
+
       const productData = {
         ...req.body,
         varients: varientsArray,

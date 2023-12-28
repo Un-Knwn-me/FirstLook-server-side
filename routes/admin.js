@@ -25,11 +25,11 @@ router.post('/product/add', upload.array('images', 6), async (req, res, next) =>
 
         // Generate the public URL for the file
         const url = format(`https://storage.cloud.google.com/${bucketName}/${originalname}`);
-        imageUrls.push(url);
+        await imageUrls.push(url);
       }
 
       const varientsArray = await JSON.parse(req.body.varients);
-
+console.log(imageUrls)
       const productData = {
         ...req.body,
         varients: varientsArray,
@@ -37,7 +37,7 @@ router.post('/product/add', upload.array('images', 6), async (req, res, next) =>
       };
 
       // Save the product with image URLs in MongoDB
-      const product = new ProductModel(productData);
+      const product = await new ProductModel(productData);
       await product.save();
 
       res.status(200).json({ message: 'Product added successfully', images: imageUrls });

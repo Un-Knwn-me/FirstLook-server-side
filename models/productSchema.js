@@ -97,6 +97,14 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please Enter Notes!']
     },
+    yLink: {
+        type: String,
+        required: [true, 'Please Enter Youtube Link!']
+    },
+    care: {
+        type: String,
+        required: [true, 'Please Enter Material and Care!']
+    },
     ratings: {
         type: Number,
         default: 0

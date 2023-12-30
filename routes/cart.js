@@ -30,9 +30,8 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     
     const existingVarient = user.cart.findIndex(
       (item) => String(item.varientId) === String(varientId)
-    )
-    
-console.log('resulting value: ', existingProduct);
+    );
+
     if (existingProduct < 0 && existingVarient < 0 ) {
       user.cart.push({ productId, quantity, salesPrice, price, varientId, selectedSize });
     } else if(existingVarient < 0) {
@@ -40,6 +39,7 @@ console.log('resulting value: ', existingProduct);
     } else {
       user.cart[existingProduct].quantity += quantity;
     }
+console.log('user: ', user);
     await user.save();
 
     res.status(200).json({ message: "Item added to cart successfully", cart: user.cart });
@@ -48,6 +48,7 @@ console.log('resulting value: ', existingProduct);
     res.status(500).json({ message: "Internal Server Error", error });
   }
 });
+
 
 // Get cart items
   router.get("/getProducts", isSignedIn, async (req, res) => {

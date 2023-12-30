@@ -18,9 +18,9 @@ router.post('/product/add', upload.array('images', 6), async (req, res, next) =>
 
       // Loop through the uploaded files and upload each to the cloud bucket
       for (const file of req.files) {
-        const originalname = file.originalname;
+        const originalname = await file.originalname;
         const blob = storage.bucket(bucketName).file(originalname);
-
+        await Promise.all(blob);
         // Make the uploaded file publicly accessible
         await blob.makePublic();
 

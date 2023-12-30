@@ -22,7 +22,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    console.log('user: ', user);
     // Check if the product already exists in the user's cart
     const existingProduct = user.cart.findIndex(
       (item) => String(item.productId) === String(productId)
@@ -39,7 +39,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     } else {
       user.cart[existingProduct].quantity += quantity;
     }
-console.log('user: ', user);
+
     await user.save();
 
     res.status(200).json({ message: "Item added to cart successfully", cart: user.cart });

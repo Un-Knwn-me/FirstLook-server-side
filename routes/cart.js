@@ -107,7 +107,7 @@ router.post("/addAddress", isSignedIn, async (req, res) => {
   try {
     const { _id } = req.user;
     const newAddress = req.body;
-
+console.log('working: ', newAddress)
     // Find the user by userId
     let user = await UserModel.findOne({ _id: _id });
 

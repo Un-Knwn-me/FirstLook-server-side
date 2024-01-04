@@ -22,7 +22,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    console.log('user: ', user);
+    
     // Check if the product already exists in the user's cart
     const existingProduct = user.cart.findIndex(
       (item) => String(item.productId) === String(productId)
@@ -115,7 +115,8 @@ router.post("/addAddress", isSignedIn, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     // let data = new user.address(req.body);
-    user.address.push(req.body);
+    const add = user.address.push(newAddress);
+    await Promise.all(add);
     await user.save();
 
     res

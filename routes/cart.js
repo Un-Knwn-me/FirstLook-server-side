@@ -115,8 +115,8 @@ router.post("/addAddress", isSignedIn, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     // let data = new user.address(req.body);
-    const add = user.address.push(newAddress);
-    await Promise.all(add);
+    user.address.push(newAddress);
+console.log(user.address)
     await user.save();
 
     res

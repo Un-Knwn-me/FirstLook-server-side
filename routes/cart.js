@@ -106,8 +106,19 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
 router.post("/addAddress", isSignedIn, async (req, res) => {
   try {
     const { _id } = req.user;
-    const newAddress = req.body;
-console.log('working: ', newAddress)
+     const { name, phone, building, street, landmark, city, state, pincode } = req.body.formData;
+
+     const newAddress = {
+      name,
+      phone,
+      building,
+      street,
+      landmark,
+      city,
+      state,
+      pincode,
+    };
+
     // Find the user by userId
     let user = await UserModel.findOne({ _id: _id });
 
@@ -115,7 +126,7 @@ console.log('working: ', newAddress)
       return res.status(404).json({ message: "User not found" });
     }
     // let data = new user.address(req.body);
-    user.address.push(newAddress);
+    req.user.address.push(newAddress);
 console.log(user.address)
     await user.save();
 

@@ -11,7 +11,7 @@ router.post("/initiate", async(req, res) => {
     // Find the order by orderId
     let orders = await OrderModel.find({ _id: orderId });
 
-    const subTotalAmount = orders[0].subTotalAmount*100;
+    const subTotalAmount = orders[0].totalAmount*100;
 
     // options
     const options = {

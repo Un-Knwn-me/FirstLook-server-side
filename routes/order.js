@@ -8,10 +8,12 @@ const OrderModel = require('../models/orderSchema');
 router.post('/createOrder', isSignedIn, async(req, res) => {
     try {
         const { _id } = req.user;
-        const {shippingAddress, totalItems, subTotalAmount} = req.body;
+        const {shippingAddress, totalItems, subTotalAmount, shippingCharge} = req.body;
         
-        if(subTotalAmount < 150) {
-            return res.status(404).json({ message: "User not found" });
+        const totalAmount = await subTotalAmount+shippingCharge;
+
+        if(totalAmount < 150 && shippingCharge < 30) {
+            return res.status(404).json({ message: "Error login again" });
         }
 
     // Find the user by userId
@@ -21,12 +23,13 @@ router.post('/createOrder', isSignedIn, async(req, res) => {
     }
           
     // Get the productId from the cart
-    const products = await user.cart.map((item) => item);
-
+    const products = user.cart.map((item) => item);
+    await Promise.all(products);
+    
     // Get deliveryAddress
     const deliveryAddress = user.address.find((address) => address._id.equals(shippingAddress));
 
-    let data = new OrderModel({ user: _id, products, totalItems, subTotalAmount, deliveryAddress});
+    let data = new OrderModel({ user: _id, products, totalItems, subTotalAmount, deliveryAddress, shippingCharge, totalAmount});
     await data.save();
     
     res.status(200).json({ message: "Order created success", orderId: data._id })

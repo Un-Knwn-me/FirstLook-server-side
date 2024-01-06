@@ -32,14 +32,14 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    // deliveryCharge: {
-    //     type: Number,
-    //     required: true
-    // },
-    // totalAmount: {
-    //     type: Number,
-    //     required: true
-    // },
+    shippingCharge: {
+        type: Number,
+        required: true
+    },
+    totalAmount: {
+        type: Number,
+        required: true
+    },
     paymentDetails: {
         paymentMethod: {
             type: String

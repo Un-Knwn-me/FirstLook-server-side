@@ -3,6 +3,7 @@ var router = express.Router();
 const { UserModel } = require("../models/userSchema");
 const { isSignedIn } = require("../middlewares/adminAuth");
 const { ProductModel } = require("../models/productSchema");
+const { log } = require("winston");
 
 // Add to cart
 router.post("/addToCart", isSignedIn, async (req, res) => {
@@ -106,33 +107,19 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
 router.post("/addAddress", isSignedIn, async (req, res) => {
   try {
     const { _id } = req.user;
-     const { name, phone, building, street, landmark, city, state, pincode } = req.body.formData;
-
-     const newAddress = {
-      name,
-      phone,
-      building,
-      street,
-      landmark,
-      city,
-      state,
-      pincode,
-    };
+    const newAddress = req.body.formData;
 
     // Find the user by userId
-    let user = await UserModel.findOne({ _id: _id });
+    const user = await UserModel.findByIdAndUpdate( _id,
+      { $push: { address: newAddress } },
+      { new: true }
+    );
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
-    // let data = new user.address(req.body);
-    req.user.address.push(newAddress);
-console.log(user.address)
-    await user.save();
 
-    res
-      .status(200)
-      .json({
+    res.status(200).json({
         message: "Address added successfully",
         userAddress: user.address,
       });
@@ -141,6 +128,22 @@ console.log(user.address)
     res.status(500).json({ message: "Internal Server Error", error });
   }
 });
+
+// Check address
+router.get("/checkAddress/:deliveryAddress", isSignedIn, async (req, res) => {
+    try {
+      const { _id } = req.user;
+      const addressId = req.params.deliveryAddress;
+
+      let user = await UserModel.findOne({ _id: _id }); 
+      const address = user.address.find((addr) => String(addr._id) === addressId);
+    
+      res.status(200).json({ message: "Delivery Address confirmed", address })
+    } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error", error });
+    }
+})
 
 // change quantity in cart
 router.put("/changeQuantity", isSignedIn, async (req, res) => {
@@ -266,4 +269,5 @@ router.delete("/removecart/:cartId", isSignedIn, async (req, res) => {
     //   (item) => String(item.productId) !== String(productId)
     // );
     // await user.save();
+
 module.exports = router;

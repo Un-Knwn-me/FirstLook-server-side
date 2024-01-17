@@ -1,10 +1,12 @@
 var express = require('express');
 const { hashPassword, createToken, hashCompare } = require('../controllers/auth');
 const { UserModel } = require('../models/userSchema');
+const { isSignedIn } = require('../middlewares/adminAuth');
+const OrderModel = require('../models/orderSchema');
 var router = express.Router();
 
 // signup user
-router.post("/signup", async (req, res)=>{
+router.post("/signup", async (req, res) => {
   try {
     let user = await UserModel.findOne({ email: req.body.email });
 
@@ -43,9 +45,61 @@ router.post('/signin', async (req, res) => {
       }           
        
       } catch (error) {
-        console.log(error);
+      console.log(error);
       res.status(500).json({ message: "Internal Server Error", error });      
       }
+});
+
+// get order lists
+router.get('/list-orders', isSignedIn, async(req, res) => {
+  try {
+    const userId = req.user;
+    const { orderStatus, orderDate } = req.query;
+
+    // get orderId from user model
+    const orderlist = await OrderModel.find({ user: userId }).sort({orderDate: -1});
+
+    if (!orderlist) {
+      return res.status(404).json({ message: 'No Order History Available' });
+    }
+
+    let filteredOrders = [...orderlist];
+
+    if (orderStatus) {
+      filteredOrders = filteredOrders.filter(order => order.deliveryStatus === orderStatus);
+    }
+
+    if (orderDate) {
+      const currentDate = new Date();
+      let startDate;
+
+      switch (orderDate) {
+        case 'last30days':
+          startDate = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+          break;
+        case 'last60days':
+          startDate = new Date(currentDate.getTime() - 60 * 24 * 60 * 60 * 1000);
+          break;
+        case 'last90days':
+          startDate = new Date(currentDate.getTime() - 90 * 24 * 60 * 60 * 1000);
+          break;
+        case 'last1year':
+          startDate = new Date(currentDate.getTime() - 365 * 24 * 60 * 60 * 1000);
+          break;
+        default:
+          break;
+      }
+
+      if (startDate) {
+        filteredOrders = filteredOrders.filter(order => order.orderDate >= startDate && order.orderDate <= currentDate);
+      }
+    }
+
+    res.status(200).json({ orderlist: filteredOrders });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error", error });      
+  }
 });
 
 // send password reset request via mail

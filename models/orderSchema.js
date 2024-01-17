@@ -13,6 +13,18 @@ const orderSchema = new mongoose.Schema({
                 ref: 'products',
                 required: true
             },
+            prodImg: {
+                type: String,
+                required: true
+            },
+            prodName: {
+                type: String,
+                required: true
+            },
+            prodCategory: {
+                type: String,
+                required: true
+            },
             varientId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'products.variants',
@@ -21,7 +33,14 @@ const orderSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
-            
+            selectedSize: {
+                type: String,
+                required: true
+            },
+            salesPrice: {
+                type: Number,
+                required:true
+            },
         }
     ],
     totalItems: {
@@ -102,9 +121,12 @@ const orderSchema = new mongoose.Schema({
     trackingId: {
         type: String
     },
+    trackingSite: {
+        type: String
+    },
     deliveryStatus: {
         type: String,
-        enum: ['Dispatched', 'Completed', 'Returned', 'Refunded', 'Pending'],
+        enum: [ 'Pending', 'Confirmed', 'Dispatched', 'Shipped', 'Delivered', 'Returned',  'Failed'],
         default: 'Pending'
     },
     deliveredDate: {

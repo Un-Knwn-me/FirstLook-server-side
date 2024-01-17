@@ -38,6 +38,21 @@ const userSchema = new mongoose.Schema({
     weight:{
         type:Number,
     },
+    wishlist: [
+        {
+            productId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'products'
+            },
+            varientId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'products.variants',
+            },
+            selectedSize: {
+                type: String
+            }
+        }
+    ],
     cart: [
         {
             productId: {
@@ -64,10 +79,10 @@ const userSchema = new mongoose.Schema({
     ],
     orderId: [
         {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'orders'
-    },
-],
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'orders'
+        },
+    ],
     address: [
         {
             name: {

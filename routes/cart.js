@@ -55,7 +55,7 @@ router.post("/addToCart", isSignedIn, async (req, res) => {
   router.get("/getProducts", isSignedIn, async (req, res) => {
     try {
       const { _id } = req.user;
-
+      
       // Find the user by userId
       let user = await UserModel.findOne({ _id: _id });
 

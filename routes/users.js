@@ -36,7 +36,7 @@ router.post('/signin', async (req, res) => {
           if(await hashCompare(password, user.password)){
               let token = createToken({ _id: user._id, name: user.name, shirtSize: user.shirtSize, hipSize: user.hipSize })
 
-              res.status(200).json({message: "User successfully logged in", token, userName: user.name });
+              res.status(200).json({message: "User successfully logged in", token, userName: user.name, userId: user._id });
           } else {
               res.status(401).json({message: "Invalid credentials"})
           }

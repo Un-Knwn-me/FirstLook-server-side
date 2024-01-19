@@ -1,7 +1,54 @@
 var express = require('express');
 const { ProductModel } = require('../models/productSchema');
+const { UserModel } = require('../models/userSchema');
 var router = express.Router();
 
+// Get home products
+router.get('/home', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    let user = await UserModel.findOne({ _id: userId });
+
+    if(user){
+      
+    // get all products by category
+    const products = await ProductModel.find({
+      $or: [
+        {
+          publish: true,
+          category: 'Pant',
+          'varients': {
+            $elemMatch: {
+              size: user.hipSize,
+              stock: { $gt: 0 } 
+            }
+          }
+        },
+        {
+          publish: true,
+          category: 'T-shirts',
+          'varients': {
+            $elemMatch: {
+              size: user.shirtSize,
+              stock: { $gt: 0 } 
+            }
+          }
+        },
+      ],
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(products);
+  } else {
+    const products = await ProductModel.find({ publish: true }).sort({ createdAt: -1 }).limit(24);
+    res.status(200).json(products);
+  }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+})
 
 // Get all products
 router.get('/list', async (req, res) => {
@@ -30,7 +77,7 @@ router.get('/list', async (req, res) => {
         break;
     }
 
-    const products = await ProductModel.find().sort(sortCriteria);
+    const products = await ProductModel.find({ publish: true }).sort(sortCriteria);
     res.status(200).json(products);
   } catch (error) {
     console.error(error);

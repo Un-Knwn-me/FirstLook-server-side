@@ -8,9 +8,8 @@ router.get('/home', async (req, res) => {
   try {
     const { userId } = req.query;
 
-    let user = await UserModel.findOne({ _id: userId });
-
-    if(user){
+if(userId != ""){
+      let user = await UserModel.findOne({ _id: userId });
       
     // get all products by category
     const products = await ProductModel.find({

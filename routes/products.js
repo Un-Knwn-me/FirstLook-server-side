@@ -39,7 +39,7 @@ if(userId != ""){
 
     res.status(200).json(products);
   } else {
-    const products = await ProductModel.find({ publish: true }).sort({ createdAt: -1 }).limit(24);
+    const products = await ProductModel.find({ publish: true }).sort({ createdAt: -1 }).limit(12);
     res.status(200).json(products);
   }
 

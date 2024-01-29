@@ -5,6 +5,7 @@ const { isSignedIn } = require('../middlewares/adminAuth');
 const OrderModel = require('../models/orderSchema');
 var router = express.Router();
 
+
 // signup user
 router.post("/signup", async (req, res) => {
   try {
@@ -23,6 +24,7 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error", error });
   }
 });
+
 
 // signin user
 router.post('/signin', async (req, res) => {
@@ -49,6 +51,47 @@ router.post('/signin', async (req, res) => {
       res.status(500).json({ message: "Internal Server Error", error });      
       }
 });
+
+
+// Add to wishlist
+router.post("/wishlist/add", isSignedIn, async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { productId, varientId, selectedSize } = req.body;
+
+    // Find the user by userId
+    let user = await UserModel.findOne({ _id: _id });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+  
+    // Check if the product already exists in the user's cart
+    const existingProduct = user.wishlist.findIndex(
+      (item) => String(item.productId) === String(productId)
+    );
+
+    if(existingProduct === -1){
+      const wishlistItem = { productId };
+      if (varientId && selectedSize) {
+        wishlistItem.varientId = varientId;
+        wishlistItem.selectedSize = selectedSize;
+      }
+      user.wishlist.push(wishlistItem);
+      await user.save();
+      return res.status(200).json({ message: "Product added to wishlist", wishlist: user.wishlist });
+    } else {
+      user.wishlist.splice(existingProduct, 1);
+      await user.save();
+      return res.status(200).json({ message: "Product removed from wishlist", wishlist: user.wishlist });
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+});
+
 
 // get order lists
 router.get('/list-orders', isSignedIn, async(req, res) => {
@@ -102,6 +145,7 @@ router.get('/list-orders', isSignedIn, async(req, res) => {
   }
 });
 
+
 // send password reset request via mail
 router.post('/forgot-password', async (req, res)=>{
   try {
@@ -146,6 +190,7 @@ router.post('/forgot-password', async (req, res)=>{
   }
 })
 
+
 // Set new password
 router.post('/reset-password/:token', async (req, res) => {
   const { token } = req.params;
@@ -175,6 +220,7 @@ router.post('/reset-password/:token', async (req, res) => {
     res.status(500).json({ message: "Internal Server Error", error });
   }
 });
+
 
 // User logout route
 router.get('/logout', (req, res) => {

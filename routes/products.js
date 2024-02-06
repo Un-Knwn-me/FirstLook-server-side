@@ -7,12 +7,13 @@ var router = express.Router();
 router.get('/home', async (req, res) => {
   try {
     const { userId } = req.query;
+    let products;
 
 if(userId != ""){
       let user = await UserModel.findOne({ _id: userId });
       
     // get all products by category
-    const products = await ProductModel.find({
+    products = await ProductModel.find({
       $or: [
         {
           publish: true,
@@ -35,14 +36,17 @@ if(userId != ""){
           }
         },
       ],
-    }).sort({ createdAt: -1 });
+    }).find({ publish: true }).sort({ createdAt: -1 });
 
-    res.status(200).json(products);
+    for (const product of products) {
+      const isInWishlist = user.wishlist.some(item => String(item.productId) === String(product._id));
+      product.isWishlist = isInWishlist;
+    }
   } else {
-    const products = await ProductModel.find({ publish: true }).sort({ createdAt: -1 }).limit(12);
-    res.status(200).json(products);
+    products = await ProductModel.find({ publish: true }).sort({ createdAt: -1 }).limit(12);
   }
-
+  
+  res.status(200).json(products);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
@@ -53,7 +57,7 @@ if(userId != ""){
 router.get('/list', async (req, res) => {
   try {
     const { sortBy } = req.query;
-
+    const { userId } = req.query;
     let sortCriteria = {};
 
     switch (sortBy) {
@@ -77,6 +81,15 @@ router.get('/list', async (req, res) => {
     }
 
     const products = await ProductModel.find({ publish: true }).sort(sortCriteria);
+
+    if(userId){
+    const user = await UserModel.findById(userId);
+    for (const product of products) {
+      const isInWishlist = user.wishlist.some(item => String(item.productId) === String(product._id));
+      product.isWishlist = isInWishlist;
+    }
+  }
+
     res.status(200).json(products);
   } catch (error) {
     console.error(error);

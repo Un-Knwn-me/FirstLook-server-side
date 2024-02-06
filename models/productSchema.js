@@ -75,6 +75,10 @@ const productSchema = new mongoose.Schema({
             },
         }
     ],
+    isWishlist: {
+        type: Boolean,
+        default: false,
+    },
     fabric: {
         type: String,
         required: [[true, "Please Enter Product Fabric!"]],

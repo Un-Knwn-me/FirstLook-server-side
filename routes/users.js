@@ -46,16 +46,14 @@ router.post("/signin", async (req, res) => {
           hipSize: user.hipSize,
         });
 
-        res
-          .status(200)
-          .json({
-            message: "User successfully logged in",
-            token,
-            userName: user.name,
-            userId: user._id,
-            wishlist: user.wishlist,
-            cartItems: user.cart,
-          });
+        res.status(200).json({
+          message: "User successfully logged in",
+          token,
+          userName: user.name,
+          userId: user._id,
+          wishlist: user.wishlist,
+          cartItems: user.cart,
+        });
       } else {
         res.status(401).json({ message: "Invalid credentials" });
       }
@@ -94,21 +92,17 @@ router.post("/wishlist/add", isSignedIn, async (req, res) => {
       }
       user.wishlist.push(wishlistItem);
       await user.save();
-      return res
-        .status(200)
-        .json({
-          message: "Product added to wishlist",
-          wishlist: user.wishlist,
-        });
+      return res.status(200).json({
+        message: "Product added to wishlist",
+        wishlist: user.wishlist,
+      });
     } else {
       user.wishlist.splice(existingProduct, 1);
       await user.save();
-      return res
-        .status(200)
-        .json({
-          message: "Product removed from wishlist",
-          wishlist: user.wishlist,
-        });
+      return res.status(200).json({
+        message: "Product removed from wishlist",
+        wishlist: user.wishlist,
+      });
     }
   } catch (error) {
     console.log(error);
@@ -139,10 +133,15 @@ router.get("/wishlistItems", isSignedIn, async (req, res) => {
         }
 
         // set the selected varient and seleccted Size as null if it is undefined
-        const selectedVarient = wishlistItem.varientId ? wishlistItem.varientId : null;
-        const selectedSize = wishlistItem.selectedSize ? wishlistItem.selectedSize : null;
+        const selectedVarient = wishlistItem.varientId
+          ? wishlistItem.varientId
+          : null;
+        const selectedSize = wishlistItem.selectedSize
+          ? wishlistItem.selectedSize
+          : null;
 
         return {
+          _id: wishlistItem._id,
           product: product,
           selectedVarient: selectedVarient,
           selectedSize: selectedSize,
@@ -157,6 +156,74 @@ router.get("/wishlistItems", isSignedIn, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// remove wishlist item by id
+router.delete("/wishlist/:itemId", isSignedIn, async (req, res) => {
+  try {
+    const userId = req.user;
+    const itemId = req.params.itemId;
+
+    // Find the user by ID
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Remove the wishlist item by its ID
+    const updatedWishlist = user.wishlist.filter(
+      (item) => String(item._id) !== itemId
+    );
+
+    // Update the user's wishlist
+    user.wishlist = updatedWishlist;
+    await user.save();
+
+    res.status(200).json({
+      message: "Wishlist item removed successfully",
+      wishlist: user.wishlist,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// manage size for wishlist item
+router.post("/wishlist/addSize", isSignedIn, async (req, res) => {
+  try {
+    const userId = req.user;
+    const { selectedItem, selectedVariantId, selectedSize } = req.body;
+
+    // Find the user by ID
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // get the item by id
+    const wishedItem = user.wishlist.findIndex(
+      (item) => String(item._id) === selectedItem
+    );
+
+    if (wishedItem === -1) {
+      return res.status(404).json({ message: "Item not found in wishlist" });
+    }
+
+    // Update the item with the selected size and variant ID
+    user.wishlist[wishedItem].selectedSize = selectedSize;
+    user.wishlist[wishedItem].varientId = selectedVariantId;
+
+    await user.save();
+
+    res.status(200).json({ message: "Size added to wishlist item successfully", wishlist: user.wishlist, });
+    console.log(user.wishlist);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error", error });
   }
 });
 

@@ -22,11 +22,12 @@ router.post("/initiate", async(req, res) => {
         };
 
     const response = await razorpay.orders.create(options)
-        res.status(200).json({
+        
+    res.status(200).json({
             order_id: response.id,
             currency: response.currency,
             amount: response.amount,
-        })
+    })
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal Server Error", error });  

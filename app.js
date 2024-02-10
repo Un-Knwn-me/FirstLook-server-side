@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
-  origin: ['https://emperor-polo-client.web.app', 'https://emperorpolo.netlify.app', 'http://localhost:5173'],
+  origin: ['https://emperorpolo.com', 'https://emperorpolo.netlify.app', 'http://localhost:5173'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
 }));

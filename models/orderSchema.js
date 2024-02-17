@@ -60,20 +60,23 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
     paymentDetails: {
-        paymentMethod: {
+        razorpay_payment_id: {
+            type: String
+        },
+        razorpay_order_id: {
+            type: String
+        },
+        razorpay_signature: {
+            type: String
+        },
+         paymentMethod: {
             type: String
         },
         paymentStatus: {
             type: String,
-            enum: ['Pending', 'Completed', 'Failed'],
+            enum: ['Pending', 'Completed', 'Failed', 'Cancelled'],
             default: 'Pending'
         },
-        paymentId: {
-            type: String
-        },
-        transactionId: {
-            type: String
-        },    
     },
     deliveryAddress: {
         name: {
@@ -126,7 +129,7 @@ const orderSchema = new mongoose.Schema({
     },
     deliveryStatus: {
         type: String,
-        enum: [ 'Pending', 'Confirmed', 'Dispatched', 'Shipped', 'Delivered', 'Returned',  'Failed'],
+        enum: [ 'Pending', 'Confirmed', 'Dispatched', 'On the way', 'Delivered', 'Returned', 'Failed'],
         default: 'Pending'
     },
     deliveredDate: {
